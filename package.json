@@ -55,7 +55,7 @@
   "homepage": "https://github.com/gabrielbryk/arc-devtools-mcp#readme",
   "mcpName": "io.github.gabrielbryk/arc-devtools-mcp",
   "devDependencies": {
-    "@eslint/js": "^9.35.0",
+    "@eslint/js": "^10.0.1",
     "@google/genai": "^2.0.1",
     "@modelcontextprotocol/sdk": "1.29.0",
     "@rollup/plugin-commonjs": "^29.0.0",
@@ -74,7 +74,7 @@
     "chrome-devtools-frontend": "1.0.1646286",
     "core-js": "3.49.0",
     "debug": "4.4.3",
-    "eslint": "^9.35.0",
+    "eslint": "^10.5.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^17.0.0",
