@@ -1,8 +1,48 @@
+# Arc DevTools MCP
+
+[![npm @gabrielbryk/arc-devtools-mcp package](https://img.shields.io/npm/v/@gabrielbryk/arc-devtools-mcp.svg)](https://npmjs.org/package/@gabrielbryk/arc-devtools-mcp)
+
+A fork of [`chrome-devtools-mcp`](https://github.com/ChromeDevTools/chrome-devtools-mcp)
+(Google, Apache-2.0) that adds an **Arc browser** compatibility mode.
+
+## Why this fork
+
+Arc crashes when a tab is created programmatically (`Target.createTarget`, which
+`browser.newPage()` triggers). Run with `--arc` and `new_page` instead **reuses an
+existing blank tab** rather than opening one:
+
+- Reuses a blank/new tab (`about:blank`, `arc://newtab`, `chrome://newtab/`) and
+  loads the URL there.
+- If no blank tab exists, it returns a clear error asking you to open one
+  (e.g. `Cmd+T`) — it never navigates one of your loaded tabs away.
+- Without `--arc`, behavior is identical to upstream `chrome-devtools-mcp`.
+
+Start Arc with remote debugging (Arc must be fully quit first):
+
+```bash
+/Applications/Arc.app/Contents/MacOS/Arc --remote-debugging-port=9222
+```
+
+MCP config:
+
+```json
+{
+  "mcpServers": {
+    "arc-devtools": {
+      "command": "npx",
+      "args": ["-y", "@gabrielbryk/arc-devtools-mcp@latest", "--browserUrl=http://127.0.0.1:9222", "--arc"]
+    }
+  }
+}
+```
+
+Everything below is from upstream `chrome-devtools-mcp` and applies unchanged.
+
+---
+
 # Chrome DevTools for agents
 
-[![npm chrome-devtools-mcp package](https://img.shields.io/npm/v/chrome-devtools-mcp.svg)](https://npmjs.org/package/chrome-devtools-mcp)
-
-Chrome DevTools for agents (`chrome-devtools-mcp`) lets your coding agent (such as Antigravity, Claude, Cursor or Copilot)
+Chrome DevTools for agents lets your coding agent (such as Antigravity, Claude, Cursor or Copilot)
 control and inspect a live Chrome browser. It acts as a Model-Context-Protocol
 (MCP) server, giving your AI coding assistant access to the full power of
 Chrome DevTools for reliable automation, in-depth debugging, and performance analysis.

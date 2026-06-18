@@ -22,17 +22,32 @@ let browser: Browser | undefined;
 let browserMode: 'launched' | 'connected' | undefined;
 
 function makeTargetFilter(enableExtensions = false) {
-  const ignoredPrefixes = new Set(['chrome://', 'chrome-untrusted://']);
+  // `arc://` is the Arc browser's internal scheme (analogous to `chrome://`).
+  // Filtering it keeps Arc's internal pages out of the page list. These entries
+  // are harmless on Chrome, where no `arc://` targets exist.
+  const ignoredPrefixes = new Set([
+    'chrome://',
+    'chrome-untrusted://',
+    'arc://',
+  ]);
   if (!enableExtensions) {
     ignoredPrefixes.add('chrome-extension://');
   }
 
   return function targetFilter(target: Target): boolean {
-    if (target.url() === 'chrome://newtab/') {
+    // Keep new-tab pages visible so they can be reused (see McpContext.newPage
+    // under `--arc`). Arc's new tab may surface as `arc://newtab` or `about:blank`.
+    if (
+      target.url() === 'chrome://newtab/' ||
+      target.url().startsWith('arc://newtab')
+    ) {
       return true;
     }
     // Could be the only page opened in the browser.
-    if (target.url().startsWith('chrome://inspect')) {
+    if (
+      target.url().startsWith('chrome://inspect') ||
+      target.url().startsWith('arc://inspect')
+    ) {
       return true;
     }
     for (const prefix of ignoredPrefixes) {
@@ -103,7 +118,7 @@ export async function ensureBrowserConnected(options: {
         connectOptions.browserWSEndpoint = browserWSEndpoint;
       } catch (error) {
         throw new Error(
-          `Could not connect to Chrome in ${userDataDir}. Check if Chrome is running and remote debugging is enabled by going to chrome://inspect/#remote-debugging.`,
+          `Could not connect to Chrome/Arc in ${userDataDir}. Check if the browser is running and remote debugging is enabled by going to chrome://inspect/#remote-debugging (or arc://inspect/#remote-debugging in Arc).`,
           {
             cause: error,
           },
@@ -133,7 +148,7 @@ export async function ensureBrowserConnected(options: {
     browser = connected;
   } catch (err) {
     throw new Error(
-      `Could not connect to Chrome. ${autoConnect ? `Check if Chrome is running and remote debugging is enabled by going to chrome://inspect/#remote-debugging.` : `Check if Chrome is running.`}`,
+      `Could not connect to Chrome/Arc. ${autoConnect ? `Check if the browser is running and remote debugging is enabled by going to chrome://inspect/#remote-debugging (or arc://inspect/#remote-debugging in Arc).` : `Check if the browser is running.`}`,
       {
         cause: err,
       },

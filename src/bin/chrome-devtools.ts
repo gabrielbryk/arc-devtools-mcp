@@ -28,7 +28,7 @@ import {commands} from './chrome-devtools-cli-options.js';
 import {cliOptions, parseArguments} from './chrome-devtools-mcp-cli-options.js';
 
 await checkForUpdates(
-  'Run `npm install -g chrome-devtools-mcp@latest` and `chrome-devtools start` to update and restart the daemon.',
+  'Run `npm install -g @gabrielbryk/arc-devtools-mcp@latest` and `arc-devtools start` to update and restart the daemon.',
 );
 
 async function start(args: string[], sessionId: string) {
@@ -62,11 +62,11 @@ startCliOptions.isolated!.description =
 startCliOptions.categoryExtensions!.default = true;
 
 const y = yargs(hideBin(process.argv))
-  .scriptName('chrome-devtools')
+  .scriptName('arc-devtools')
   .showHelpOnFail(true)
-  .usage('chrome-devtools <command> [...args] --flags')
+  .usage('arc-devtools <command> [...args] --flags')
   .usage(
-    `Run 'chrome-devtools <command> --help' for help on the specific command.`,
+    `Run 'arc-devtools <command> --help' for help on the specific command.`,
   )
   .option('sessionId', {
     type: 'string',

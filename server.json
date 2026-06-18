@@ -1,10 +1,10 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.ChromeDevTools/chrome-devtools-mcp",
-  "title": "Chrome DevTools MCP",
-  "description": "MCP server for Chrome DevTools",
+  "name": "io.github.gabrielbryk/arc-devtools-mcp",
+  "title": "Arc DevTools MCP",
+  "description": "Arc-compatible MCP server for Chrome DevTools. Fork of chrome-devtools-mcp that adds an --arc mode so new_page reuses a blank tab instead of crashing Arc.",
   "repository": {
-    "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+    "url": "https://github.com/gabrielbryk/arc-devtools-mcp",
     "source": "github"
   },
   "version": "1.3.0",
@@ -12,7 +12,7 @@
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "chrome-devtools-mcp",
+      "identifier": "@gabrielbryk/arc-devtools-mcp",
       "version": "1.3.0",
       "transport": {
         "type": "stdio"

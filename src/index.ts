@@ -144,6 +144,7 @@ export async function createMcpServer(
         experimentalDevToolsDebugging: devtools,
         experimentalIncludeAllPages: serverArgs.experimentalIncludeAllPages,
         performanceCrux: serverArgs.performanceCrux,
+        arc: serverArgs.arc,
         hasNetworkBlockOrAllowlist: Boolean(
           (blocklist && blocklist.length > 0) ||
           (allowlist && allowlist.length > 0),

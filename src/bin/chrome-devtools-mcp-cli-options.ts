@@ -21,6 +21,15 @@ export const cliOptions = {
       return value;
     },
   },
+  arc: {
+    type: 'boolean',
+    description:
+      'Enable Arc browser compatibility mode. Arc crashes when a tab is created programmatically (Target.createTarget), so in this mode `new_page` reuses an existing blank/new tab instead of opening one. Requires a blank tab (e.g. arc://newtab or about:blank) to be open. Use together with --browserUrl/--wsEndpoint pointing at an Arc instance started with --remote-debugging-port.',
+    default: false,
+    coerce: (value: boolean | undefined) => {
+      return value ?? false;
+    },
+  },
   browserUrl: {
     type: 'string',
     description:
@@ -364,7 +373,7 @@ export function parseArguments(
   env = process.env,
 ) {
   const yargsInstance = yargs(hideBin(argv))
-    .scriptName('npx chrome-devtools-mcp@latest')
+    .scriptName('npx @gabrielbryk/arc-devtools-mcp@latest')
     .options(cliOptions)
     .middleware(args => {
       // We can't set default in the options else

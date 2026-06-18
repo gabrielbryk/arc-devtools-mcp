@@ -66,10 +66,26 @@ interface McpContextOptions {
   performanceCrux: boolean;
   // Whether allowlist/blocklist is configured.
   hasNetworkBlockOrAllowlist?: boolean;
+  // Whether Arc browser compatibility mode is enabled. Arc crashes on
+  // programmatic tab creation (Target.createTarget), so `newPage` reuses an
+  // existing blank tab instead of creating one.
+  arc?: boolean;
 }
 
 const DEFAULT_TIMEOUT = 5_000;
 const NAVIGATION_TIMEOUT = 10_000;
+
+// A tab is safe to reuse (instead of opening a new one) only when it is blank,
+// so reusing it never discards a page the user cares about. Covers Chrome's and
+// Arc's new-tab/blank URLs. A target reporting an empty URL has not navigated.
+function isReusableBlankUrl(url: string): boolean {
+  return (
+    url === '' ||
+    url === 'about:blank' ||
+    url === 'chrome://newtab/' ||
+    url.startsWith('arc://newtab')
+  );
+}
 
 export class McpContext implements Context {
   browser: Browser;
@@ -309,6 +325,9 @@ export class McpContext implements Context {
     background?: boolean,
     isolatedContextName?: string,
   ): Promise<McpPage> {
+    if (this.#options.arc) {
+      return this.#newPageArc(isolatedContextName);
+    }
     let page: Page;
     if (isolatedContextName !== undefined) {
       let ctx = this.#isolatedContexts.get(isolatedContextName);
@@ -325,6 +344,39 @@ export class McpContext implements Context {
     this.#networkCollector.addPage(page);
     this.#consoleCollector.addPage(page);
     return this.#getMcpPage(page);
+  }
+
+  // Arc browser crashes when a tab is created programmatically via
+  // Target.createTarget — which both browser.newPage() and
+  // createBrowserContext().newPage() trigger. In Arc mode we therefore never
+  // create a tab: we reuse an existing blank/new tab. Crucially we only reuse a
+  // *blank* tab, never a loaded one, so we never navigate the user's active page
+  // away. If no blank tab exists we surface an actionable error instead of
+  // clobbering whatever tab happens to be last.
+  async #newPageArc(isolatedContextName?: string): Promise<McpPage> {
+    if (isolatedContextName !== undefined) {
+      throw new Error(
+        'Isolated browser contexts are not supported in Arc mode (--arc): ' +
+          'creating one requires programmatic tab creation, which crashes Arc. ' +
+          'Retry without isolatedContext.',
+      );
+    }
+    await this.createPagesSnapshot();
+    const reusable = this.#pages.find(page => isReusableBlankUrl(page.url()));
+    if (!reusable) {
+      throw new Error(
+        'Arc mode (--arc) cannot open a new tab: Arc crashes on programmatic ' +
+          'tab creation. Open a blank tab in Arc (e.g. Cmd+T) and retry — ' +
+          'new_page will reuse that blank tab.',
+      );
+    }
+    const mcpPage = this.#getMcpPage(reusable);
+    this.selectPage(mcpPage);
+    // addPage is idempotent and the page is normally already tracked via the
+    // browser 'targetcreated' listener; call it anyway to mirror the create path.
+    this.#networkCollector.addPage(reusable);
+    this.#consoleCollector.addPage(reusable);
+    return mcpPage;
   }
   async closePage(pageId: number): Promise<void> {
     if (this.#pages.length === 1) {

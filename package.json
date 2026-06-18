@@ -1,11 +1,11 @@
 {
-  "name": "chrome-devtools-mcp",
+  "name": "@gabrielbryk/arc-devtools-mcp",
   "version": "1.3.0",
-  "description": "MCP server for Chrome DevTools",
+  "description": "Arc-compatible MCP server for Chrome DevTools. Fork of chrome-devtools-mcp that adds an --arc mode so new_page reuses a blank tab instead of crashing Arc.",
   "type": "module",
   "bin": {
-    "chrome-devtools-mcp": "./build/src/bin/chrome-devtools-mcp.js",
-    "chrome-devtools": "./build/src/bin/chrome-devtools.js"
+    "arc-devtools-mcp": "./build/src/bin/chrome-devtools-mcp.js",
+    "arc-devtools": "./build/src/bin/chrome-devtools.js"
   },
   "main": "./build/src/index.js",
   "scripts": {
@@ -25,6 +25,7 @@
     "test:only": "npm run build && node scripts/test.mjs --test-only",
     "test:update-snapshots": "npm run build && node scripts/test.mjs --test-update-snapshots",
     "prepare": "node scripts/prepare.ts",
+    "prepublishOnly": "npm run bundle",
     "verify-server-json-version": "node scripts/verify-server-json-version.ts",
     "update-lighthouse": "node scripts/update-lighthouse.ts",
     "update-metrics": "node scripts/update_metrics.ts",
@@ -39,14 +40,20 @@
     "!*.tsbuildinfo",
     "!*.js.map"
   ],
-  "repository": "ChromeDevTools/chrome-devtools-mcp",
-  "author": "Google LLC",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp/issues"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielbryk/arc-devtools-mcp.git"
   },
-  "homepage": "https://github.com/ChromeDevTools/chrome-devtools-mcp#readme",
-  "mcpName": "io.github.ChromeDevTools/chrome-devtools-mcp",
+  "author": "Gabriel Bryk <me@gabebryk.com> (https://gabebryk.com/)",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/gabrielbryk/arc-devtools-mcp/issues"
+  },
+  "homepage": "https://github.com/gabrielbryk/arc-devtools-mcp#readme",
+  "mcpName": "io.github.gabrielbryk/arc-devtools-mcp",
   "devDependencies": {
     "@eslint/js": "^9.35.0",
     "@google/genai": "^2.0.1",
